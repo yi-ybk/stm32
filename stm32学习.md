@@ -28,15 +28,15 @@ void XXX_StructInit
 
 CK_CNT_OV = CK_CNT / （ARR + 1）
 
-= CK_PSC / （PSC + 1） / （ARR + 1）
+​                      = CK_PSC / （PSC + 1） / （ARR + 1）
 
 时基单元中:
 
-PCS（预分频器） ： 对基准时钟进行预分频，即**每多少频**CNT计数器计数 +1 （从0开始）
+**PCS**（预分频器） ： 对基准时钟进行预分频，即**每多少频**CNT计数器计数 +1 （从0开始）
 
-CNT计数器 ： 计数器在计数时不断自增，直至到达目标值
+**CNT计数器** ： 计数器在计数时不断自增，直至到达目标值
 
-自动重装载寄存器 ： 储存目标值，当CNT计数器到达目标值时，触发中 断，并将CNT计数器清零
+**ARR**(自动重装载寄存器) ： 储存目标值，当CNT计数器到达目标值时，触发中 断，并将CNT计数器清零
 
 定时中断的区分
 
@@ -149,3 +149,48 @@ void TIM_ETRConfig()
 中断函数中，需要检测**中断标志位**，防止误触发
 
 中断函数执行完后需要清除标志位
+
+## TIM输出比较
+
+***OC (输出比较)***
+
+- CCR(Captur/Compare Register) **捕获/比较寄存器**
+
+通过比较 CCR 和 CNT 值的关系(小于,等于,大于), 输出对应的置1, 置0, 置1... 输出一个电平不断跳动的pwn波 
+
+![image-20241110155706182](C:\Users\tianxuan\AppData\Roaming\Typora\typora-user-images\image-20241110155706182.png)
+
+- 输出比较模式
+
+| **模式**         | **描述**                                                     |
+| ---------------- | ------------------------------------------------------------ |
+| 冻结             | CNT=CCR时，REF保持为原状态                                   |
+| 匹配时置有效电平 | CNT=CCR时，REF置有效电平                                     |
+| 匹配时置无效电平 | CNT=CCR时，REF置无效电平                                     |
+| 匹配时电平翻转   | CNT=CCR时，REF电平翻转                                       |
+| 强制为无效电平   | CNT与CCR无效，REF强制为无效电平                              |
+| 强制为有效电平   | CNT与CCR无效，REF强制为有效电平                              |
+| PWM模式1         | 向上计数：CNT<CCR时，REF置有效电平，CNT≥CCR时，REF置无效电平向下计数：CNT>CCR时，REF置无效电平，CNT≤CCR时，REF置有效电平 |
+| PWM模式2         | 向上计数：CNT<CCR时，REF置无效电平，CNT≥CCR时，REF置有效电平向下计数：CNT>CCR时，REF置有效电平，CNT≤CCR时，REF置无效电平 |
+
+
+
+- PWM(Pulse Width MOdulation) 脉冲宽度调制
+
+在具有惯性的系统中，可以通过对一系列脉冲的宽度进行调制，来等效地获得所需要的模拟参量，常应用于电机控速等领域
+
+**注：**只能用于惯性系统
+
+  PWM参数：   
+
+  频率 = 1 / T~S~         占空比 = T~ON~ / T~S~       分辨率 = 占空比变化步距
+
+ （T~S~：变化周期   T~ON~：高电平时长  T~OFF~：低电平时长）
+
+![image-20241110160833762](C:\Users\tianxuan\AppData\Roaming\Typora\typora-user-images\image-20241110160833762.png)
+
+PWM频率：	Freq = CK_PSC / (PSC + 1) / (ARR + 1)
+
+PWM占空比：	Duty = CCR / (ARR + 1)
+
+PWM分辨率：	Reso = 1 / (ARR + 1)
