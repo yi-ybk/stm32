@@ -1,24 +1,71 @@
 [TOC]
 
+# 基础内容
+
+![image-20241113191715431](C:\Users\tianxuan\AppData\Roaming\Typora\typora-user-images\image-20241113191715431.png)
+
+
+
 # 常用函数
 
 - 配置清除
 
-```
-void XXX_DeInit
+```c
+void XXX_DeInit()
 ```
 
 - 初始化
 
-```
-void XXX_Init
+```c
+void XXX_Init()
 ```
 
 - 将传递的结构体赋一个默认值
 
+```c
+void XXX_StructInit()
 ```
-void XXX_StructInit
-```
+
+# 中断
+
+- 中断函数*位于Start文件夹中的startup...*
+
+配置
+
+中断函数中，需要检测**中断标志位**，防止误触发
+
+中断函数执行完后需要清除标志位
+
+![image-20241113192004026](C:\Users\tianxuan\AppData\Roaming\Typora\typora-user-images\image-20241113192004026.png)
+
+- 优先级分组
+
+| **分组方式** | **抢占优先级**  | **响应优先级**  |
+| ------------ | --------------- | --------------- |
+| 分组0        | 0位，取值为0    | 4位，取值为0~15 |
+| 分组1        | 1位，取值为0~1  | 3位，取值为0~7  |
+| 分组2        | 2位，取值为0~3  | 2位，取值为0~3  |
+| 分组3        | 3位，取值为0~7  | 1位，取值为0~1  |
+| 分组4        | 4位，取值为0~15 | 0位，取值为0    |
+
+
+
+# EXTI外部中断
+
+支持的触发方式：上升沿/下降沿/双边沿/软件触发
+
+支持的GPIO口：所有GPIO口，但相同的Pin不能同时触发中断
+
+![image-20241113192014173](C:\Users\tianxuan\AppData\Roaming\Typora\typora-user-images\image-20241113192014173.png)
+
+
+
+**AFIO**
+
+- AFIO主要用于引脚复用功能的选择和重定义
+- 在STM32中，AFIO主要完成两个任务：复用功能引脚重映射、中断引脚选择
+
+![image-20241113192656050](C:\Users\tianxuan\AppData\Roaming\Typora\typora-user-images\image-20241113192656050.png)
 
 # 定时器
 
@@ -48,6 +95,8 @@ CK_CNT_OV = CK_CNT / （ARR + 1）
 
 - 代表**更新事件**，触发另一外设
 
+
+
 ## 计数模式
 
 *基本定时器* 支持向上计数模式 ， *通用定时器* 和 *高级定时器* 支持向上计数 ， 向下计数 ， 中央对齐模式
@@ -72,6 +121,10 @@ CK_CNT_OV = CK_CNT / （ARR + 1）
 
 ![image-20241109232042871](C:\Users\tianxuan\AppData\Roaming\Typora\typora-user-images\image-20241109232042871.png)
 
+- 高级定时器
+
+![image-20241113192904895](C:\Users\tianxuan\AppData\Roaming\Typora\typora-user-images\image-20241113192904895.png)
+
 - 定时中断基本结构
 
 ![image-20241109232033565](C:\Users\tianxuan\AppData\Roaming\Typora\typora-user-images\image-20241109232033565.png)
@@ -84,71 +137,65 @@ CK_CNT_OV = CK_CNT / （ARR + 1）
 6. 使能计数器
 7. 中断函数
 
-# 函数
+
+
+# TIM相关函数
 
 - 初始化时基单元
 
-```
-void TIM_TimeBaseInit
+```c
+void TIM_TimeBaseInit()
 ```
 
 - 使能计数器
 
-```
+```c
 void TIM_Cmd(TIM_TypeDef* TIMx, FunctionalState NewState)
 ```
 
 - 使能外设的中断输出
 
-```
+```c
 void TIM_ITConfig(TIM_TypeDef* TIMx, uint16_t TIM_IT, FunctionalState NewState)
 ```
 
 - 选择内部时钟
 
-```
+```c
 void TIM_InternalClockConfig(TIM_TypeDef* TIMx)
 ```
 
 - 选择ITRx其他定时器
 
-```
+```c
 void TIM_ITRxExternalClockConfig(TIM_TypeDef* TIMx, uint16_t TIM_InputTriggerSource);
 ```
 
 - 选择TIx捕获通道的时钟
 
-```
+```c
 void TIM_TIxExternalClockConfig(TIM_TypeDef* TIMx, uint16_t TIM_TIxExternalCLKSource, uint16_t TIM_ICPolarity, uint16_t ICFilter)
 ```
 
 - ETR外部时钟模式1时钟
 
-```
+```c
 void TIM_ETRClockMode1Config(TIM_TypeDef* TIMx, uint16_t TIM_ExtTRGPrescaler, uint16_t TIM_ExtTRGPolarity, uint16_t ExtTRGFilter)
 ```
 
 - ETR外部时钟模式2时钟
 
-```
+```c
 void TIM_ETRClockMode2Config()
 ```
 
 - 配置ETR引脚的参数
 
-```
+```c
 void TIM_ETRConfig()
 ```
 
-## 中断
 
-- 中断函数*位于Start文件夹中的startup...*
-
-配置
-
-中断函数中，需要检测**中断标志位**，防止误触发
-
-中断函数执行完后需要清除标志位
 
 ## TIM输出比较
 
@@ -194,3 +241,26 @@ PWM频率：	Freq = CK_PSC / (PSC + 1) / (ARR + 1)
 PWM占空比：	Duty = CCR / (ARR + 1)
 
 PWM分辨率：	Reso = 1 / (ARR + 1)
+
+
+
+### OC相关函数
+
+```c
+void TIM_OCxInit();
+/*x = 1~4 */
+```
+
+```c
+void TIM_SetComparex(TIM_TypeDef* TIMx, uint16_t Compare1);
+/*x = 1 ~ 4*/
+/*修改CCR寄存器的值*/
+```
+
+```c
+void TIM_CtrlPWMOutputs(TIM_TypeDef* TIMx, FunctionalState NewState);
+/*使用高级定时器时需要调用该函数 使能主输出 ,否则PWM不能正常输出*/
+```
+
+- OC初始化时,若使用通用定时器,可以只为 *结构体中所需参数* 进行初始化 , 再单独赋值 (*在将高级定时器作为通用定时器使用时, 若不为每一个成员赋值 , 则可能出错*)
+
