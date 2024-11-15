@@ -6,7 +6,7 @@
 
 
 
-# 常用函数
+# 常用函数命名规则
 
 - 配置清除
 
@@ -26,9 +26,59 @@ void XXX_Init()
 void XXX_StructInit()
 ```
 
+- 使能或者失能外设xxx
+
+```c
+void xxx_Cmd()
+```
+
+- 使能或者失能来自外设xxx某中断源
+
+```c
+void xxx_ITConfig()
+```
+
+- 使能或者失能外设xxx的DMA接口
+
+```c
+void xxx_DMAConfig()
+```
+
+- 用以配置外设功能
+
+```c
+void XXX_XXXConfig()
+```
+
+- 检查外设xxx某标志位被设置与否(获取标志位状态)
+
+```c
+FlagStatus xxx_GetFlagStatus()
+```
+
+- 清除外设xxx标志位
+
+```c
+void xxx_ClearFlag()
+```
+
+- 判断来自外设xxx的中断发生与否
+
+```c
+FlagStatus xxx_GetITStatus()
+```
+
+- 清除外设xxx中断待处理标志位
+
+```c
+void xxx_ClearITPendingBit()
+```
+
+
+
 # 中断
 
-- 中断函数*位于Start文件夹中的startup...*
+- 中断函数*位于Start文件夹中的**startup**...*
 
 配置
 
@@ -60,7 +110,7 @@ void XXX_StructInit()
 
 
 
-**AFIO**
+## AFIO
 
 - AFIO主要用于引脚复用功能的选择和重定义
 - 在STM32中，AFIO主要完成两个任务：复用功能引脚重映射、中断引脚选择
@@ -87,11 +137,11 @@ CK_CNT_OV = CK_CNT / （ARR + 1）
 
 定时中断的区分
 
-![{275F31C3-2910-481F-8307-A265562A6CE1}](C:\Users\tianxuan\AppData\Local\Packages\MicrosoftWindows.Client.CBS_cw5n1h2txyewy\TempState\ScreenClip\{275F31C3-2910-481F-8307-A265562A6CE1}.png)
+![{3D18E70A-1345-405D-9515-DE843DD1A0E7}](C:\Users\tianxuan\AppData\Local\Packages\MicrosoftWindows.Client.CBS_cw5n1h2txyewy\TempState\ScreenClip\{3D18E70A-1345-405D-9515-DE843DD1A0E7}.png)
 
 - 代表**更新中断**，触发中断函数
 
-![{1F472F3E-A6BE-4F97-A7A9-D7936BDB5D56}](C:\Users\tianxuan\AppData\Local\Packages\MicrosoftWindows.Client.CBS_cw5n1h2txyewy\TempState\ScreenClip\{1F472F3E-A6BE-4F97-A7A9-D7936BDB5D56}.png)
+![{A634CDE8-47CC-47DD-B0D3-B9CE9609B2F7}](C:\Users\tianxuan\AppData\Local\Packages\MicrosoftWindows.Client.CBS_cw5n1h2txyewy\TempState\ScreenClip\{A634CDE8-47CC-47DD-B0D3-B9CE9609B2F7}.png)
 
 - 代表**更新事件**，触发另一外设
 
@@ -222,7 +272,7 @@ void TIM_ETRConfig()
 
 
 
-- PWM(Pulse Width MOdulation) 脉冲宽度调制
+### PWM(Pulse Width MOdulation) 脉冲宽度调制
 
 在具有惯性的系统中，可以通过对一系列脉冲的宽度进行调制，来等效地获得所需要的模拟参量，常应用于电机控速等领域
 
@@ -244,7 +294,7 @@ PWM分辨率：	Reso = 1 / (ARR + 1)
 
 
 
-### OC相关函数
+### OC(输出比较)相关函数
 
 ```c
 void TIM_OCxInit();
@@ -263,4 +313,90 @@ void TIM_CtrlPWMOutputs(TIM_TypeDef* TIMx, FunctionalState NewState);
 ```
 
 - OC初始化时,若使用通用定时器,可以只为 *结构体中所需参数* 进行初始化 , 再单独赋值 (*在将高级定时器作为通用定时器使用时, 若不为每一个成员赋值 , 则可能出错*)
+
+
+
+# ADC数模转化器
+
+- ADC（Analog-Digital Converter）模拟-数字转换器
+- ADC可以将引脚上连续变化的模拟电压转换为内存中存储的数字变量，建立模拟电路到数字电路的桥梁
+- 输入电压范围：0~3.3V ，转换结果范围：0~4095
+- 规则组和注入组两个转换单元
+- 模拟看门狗自动监测输入电压范围
+
+![image-20241114234623406](C:\Users\tianxuan\AppData\Roaming\Typora\typora-user-images\image-20241114234623406.png)
+
+![image-20241115094754718](C:\Users\tianxuan\AppData\Roaming\Typora\typora-user-images\image-20241115094754718.png)
+
+
+
+- ADC有一个内置自校准模式。校准可大幅减小因内部电容器组的变化而造成的准精度误差
+- 建议在每次上电后执行一次校准启动
+- 校准前， ADC必须处于关电状态超过至少两个ADC时钟周期
+
+
+
+## 转换模式
+
+单次转换/多次转换  , 非扫描模式/扫描模式 , <u>两两组合</u>
+
+单次转换 : ADC触发一次后即停止
+
+多次转化 : ADC可多次触发,不会停止
+
+非扫描模式 : 只能配置一个通道
+
+扫描模式 : 可配置多个通道 , 但每个通道转换完成后不会产生任何    标志位或者中断 , 只有在一次触发中,所有通道都转换完成后才会产生标志位或者中断**(注 : 每个通道转换完成后 , 都会触发DMA请求 , 可用DMA将数据传出,防止被覆盖)** 
+
+
+
+## 函数
+
+```c
+void RCC_ADCCLKConfig(uint32_t RCC_PCLK2);
+/*配置ADCCLA分频器(在rcc.h)*/
+```
+
+```c
+void ADC_RegularChannelConfig();
+/*选择规则组的输入通道*/
+```
+
+```c
+void ADC_ResetCalibration(ADC_TypeDef* ADCx);
+/*复位校准*/
+```
+
+```c
+FlagStatus ADC_GetResetCalibrationStatus(ADC_TypeDef* ADCx);
+/*等待复位校准完成*/
+```
+
+```c
+void ADC_StartCalibration(ADC_TypeDef* ADCx);
+/*开始校准*/
+```
+
+```c
+FlagStatus ADC_GetSoftwareStartConvStatus(ADC_TypeDef* ADCx);
+/*等待校准完成*/
+```
+
+
+
+# DMA
+
+**DMA（Direct Memory Access）直接存储器存取**
+
+![image-20241115161928132](C:\Users\tianxuan\AppData\Roaming\Typora\typora-user-images\image-20241115161928132.png)
+
+![image-20241115201933116](C:\Users\tianxuan\AppData\Roaming\Typora\typora-user-images\image-20241115201933116.png)
+
+- 传输计数器 **(自减计数器)** **:** 写入一个值后, DMA每传输一次,传输计数器的值减一, 直至0之后, DMA不会再转运,且自增的地址恢复到起始地址的位置
+- 自动重装器 : 当传输计数器归0后, 使传输计数器恢复到初值   (决定了转运的模式 **单次模式** 或 **循环模式**)
+
+- M2M (Memory to Memory) : 置0为硬件触发,置1为软件触发
+- 软件触发 : 以最快的速度,连续触发DMA, 将传输计数器归0,一般<u>用于存储器到存储器的转运</u> **(不能与循环模式同时使用)**
+
+​                  **(注: 写传输寄存器时,DMA必须处于关闭状态)**
 
