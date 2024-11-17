@@ -6,7 +6,7 @@
 
 
 
-# 常用函数命名规则
+## 常用函数命名规则
 
 - 配置清除
 
@@ -73,6 +73,45 @@ FlagStatus xxx_GetITStatus()
 ```c
 void xxx_ClearITPendingBit()
 ```
+
+
+
+## 常见寄存器
+
+1. **累加器（Accumulator）** - `A`
+   - 用于存储运算结果，是算术和逻辑运算的主要寄存器。
+2. **数据寄存器（Data Register）** - `D` 或 `DR`
+   - 用于存储数据，有时也用于间接寻址。
+     - **TDR（发送数据寄存器）**
+     - **RDR（接收数据寄存器）**
+3. **程序计数器（Program Counter）** - `PC`
+   - 存储下一条要执行的指令的地址。
+4. **堆栈指针（Stack Pointer）** - `SP`
+   - 指向当前栈顶的内存地址，用于管理程序的调用和返回。
+5. **状态寄存器（Status Register）** 或 **标志寄存器（Flag Register）** - `SR` 或 `PSW`
+   - 包含各种状态标志，如进位标志（C）、零标志（Z）、溢出标志（V）等。
+     - **RXNE（Receive Not Empty）**：接收缓冲器非空标志。**当RXNE标志位为1时**，表示UART的接收缓冲区中有新的数据可以被读取。这意味着数据已经接收完毕并存储在接收数据寄存器中，等待软件读取。读取数据后，RXNE标志位会被自动置为0。
+     - **TXE（Transmit Data Register Empty）**：发送数据寄存器空标志。**当TXE标志位为1时**，表示UART的发送缓冲区为空，可以向其中写入新的数据进行发送。当数据被写入缓冲区后，TXE标志位会被自动置为0。
+6. **指令寄存器（Instruction Register）** - `IR`
+   - 存储当前正在执行的指令。
+7. **输入/输出寄存器（I/O Register）**
+   - 用于控制和监视单片机的I/O端口。
+8. **定时器/计数器寄存器（Timer/Counter Register）**
+   - 用于定时和计数功能。
+9. **中断使能寄存器（Interrupt Enable Register）** - `IER`
+   - 控制中断的使能状态。
+10. **中断标志寄存器（Interrupt Flag Register）** - `IFR`
+    - 指示哪些中断已经发生。
+11. **控制寄存器（Control Register）**
+    - 用于控制单片机的各种功能。
+12. **地址寄存器（Address Register）** - `AR`
+    - 存储内存地址，用于间接寻址。
+13. **基址寄存器（Base Address Register）**
+    - 用于存储内存的基地址。
+14. **扩展寄存器（Extended Register）**
+    - 用于扩展单片机的功能。
+15. **看门狗定时器寄存器（Watchdog Timer Register）**
+    - 用于系统监控和复位。
 
 
 
@@ -388,6 +427,8 @@ FlagStatus ADC_GetSoftwareStartConvStatus(ADC_TypeDef* ADCx);
 
 **DMA（Direct Memory Access）直接存储器存取**
 
+## 存储器映像
+
 ![image-20241115161928132](C:\Users\tianxuan\AppData\Roaming\Typora\typora-user-images\image-20241115161928132.png)
 
 ![image-20241115201933116](C:\Users\tianxuan\AppData\Roaming\Typora\typora-user-images\image-20241115201933116.png)
@@ -400,3 +441,51 @@ FlagStatus ADC_GetSoftwareStartConvStatus(ADC_TypeDef* ADCx);
 
 ​                  **(注: 写传输寄存器时,DMA必须处于关闭状态)**
 
+
+
+# SPI通信协议
+
+- SPI（Serial Peripheral Interface）是由Motorola公司开发的一种通用数据总线
+- 四根通信线：SCK（Serial Clock）、MOSI（Master Output Slave Input）、MISO（Master Input Slave Output）、SS（Slave Select）
+- 同步，**全双工**
+- 支持总线挂载多设备（一主多从）
+
+## 硬件电路
+
+- 所有SPI设备的SCK、MOSI、MISO**分别连在一起**
+- 主机另外引出多条SS控制线，分别接到各从机的SS引脚
+- **输出引脚**配置为**推挽输出**，**输入引脚**配置为**浮空或上拉输入**
+
+## 移位
+
+![image-20241116155744668](C:\Users\tianxuan\AppData\Roaming\Typora\typora-user-images\image-20241116155744668.png)
+
+<center>先移高位
+![image-20241117233826181](C:\Users\tianxuan\AppData\Roaming\Typora\typora-user-images\image-20241117233826181.png)
+
+
+**SPI时序基本单元**
+
+- 起始条件：SS从高电平切换到低电平
+- 终止条件：SS从低电平切换到高电平
+
+选中过程中，SS需始终保持为低电平
+
+![image-20241116162550701](C:\Users\tianxuan\AppData\Roaming\Typora\typora-user-images\image-20241116162550701.png)
+
+## W25Qxx(存储模块)
+
+![image-20241117150546809](C:\Users\tianxuan\AppData\Roaming\Typora\typora-user-images\image-20241117150546809.png)
+
+## Flash操作注意事项
+
+- 写入操作时：
+  - 写入操作前，必须**先进行写使能**
+  - 每个数据位**只能由1改写为0**，不能由0改写为1
+  - 写入数据前**必须先擦除**，擦除后，所有数据位变为1
+  - 擦除必须按最小擦除单元进行
+  - 连续写入多字节时，最多写入一页的数据，超过页尾位置的数据，会回到页首**覆盖写入**
+  - 写入操作结束后，芯片进入忙状态，**不响应**新的读写操作
+
+- 读取操作时：
+  - 直接调用读取时序，无需使能，无需额外操作，没有页的限制，读取操作结束后不会进入忙状态，但**不能在忙状态时读取**
