@@ -1,5 +1,92 @@
 [TOC]
 
+# 基础知识
+
+## 与门
+
+![与门](D:\textbook\图片\与门.png)
+
+
+
+| 输入A | 输入B | 输出 |
+| :---: | :---: | :--: |
+|   1   |   1   |  1   |
+|   1   |   0   |  0   |
+|   0   |   1   |  0   |
+|   0   |   0   |  0   |
+
+- 只有当所有输入端都为高电平）时，输出才为高电平1。如果任何一个输入端为低电平0，输出就为低电平0
+
+
+
+## 或门
+
+​						![或门](D:\textbook\图片\或门.png)											
+
+| 输入A | 输入B | 输出 |
+| :---: | :---: | :--: |
+|   1   |   1   |  1   |
+|   1   |   0   |  1   |
+|   0   |   1   |  1   |
+|   0   |   0   |  0   |
+
+- 只要有一个或多个输入端为高电平1，输出就为高电平1。只有当所有输入端都为低电平0时，输出才为低电平0
+
+
+
+## 非门
+
+![非门](D:\textbook\图片\非门.png)
+
+| 输入 | 输出 |
+| :--: | :--: |
+|  1   |  0   |
+|  0   |  1   |
+
+- 输出是输入的反相。如果输入为高电平1，输出就为低电平0；如果输入为低电平0，输出就为高电平1
+
+
+
+## 异或门
+
+![异或门](D:\textbook\图片\异或门.png)
+
+| 输入A | 输入B | 输出 |
+| :---: | :---: | :--: |
+|   1   |   1   |  0   |
+|   0   |   0   |  0   |
+|   1   |   0   |  1   |
+|   0   |   1   |  1   |
+
+- 若两个输入的电平相异，则输出为高电平1；若两个输入的电平相同，则输出为低电平0
+
+
+
+# 时钟源与时钟树
+
+[时钟信号的讲解](https://www.bilibili.com/video/BV1ph4y1e7Ey/?spm_id_from=333.337.search-card.all.click&vd_source=675c025be7e8b947d00b503859eb0971)
+
+## 边沿触发器
+
+边沿触发器是一种数字电路元件，它在**时钟脉冲的特定边沿**（**上升沿**或**下降沿**）到来时接收输入数据，并在该跳变瞬间触发翻转，以**确保电路数据的准确接收**
+
+
+
+![时钟信号](D:\textbook\图片\时钟信号.png)
+
+- **上升沿触发** ：在上升沿触发方式中，边沿触发器在时钟脉冲CP**从低电平变为高电平的瞬间接收输入数据**，并触发翻转。这种触发方式能够确保在时钟信号的稳定上升沿时刻捕获输入数据，避免在时钟信号不稳定时接收数据可能导致的错误。
+- **下降沿触发** ：在下降沿触发方式中，边沿触发器在时钟脉冲CP**从高电平变为低电平的瞬间接收输入数据**，并触发翻转。
+
+<center>(向边沿触发器发送的,以供其识别的方波信号,即为时钟信号/时钟脉冲)
+
+时钟信号由时钟源产生 , 由时钟树传播到全局
+
+
+
+## 分频器
+
+分频器相当于对时钟信号的频率做除法 , **改变对应硬件识别到的时钟频率**
+
 # 基础内容
 
 ![image-20241113191715431](C:\Users\tianxuan\AppData\Roaming\Typora\typora-user-images\image-20241113191715431.png)
@@ -80,7 +167,7 @@ void xxx_ClearITPendingBit()
 
 1. **累加器（Accumulator）** - `A`
    - 用于存储运算结果，是算术和逻辑运算的主要寄存器。
-2. **数据寄存器（Data Register）** - `D` 或 `DR`
+2. **数据寄存器（Data Register）** - `D` 或 **`DR`**
    - 用于存储数据，有时也用于间接寻址。
      - **TDR（发送数据寄存器）**
      - **RDR（接收数据寄存器）**
@@ -90,8 +177,8 @@ void xxx_ClearITPendingBit()
    - 指向当前栈顶的内存地址，用于管理程序的调用和返回。
 5. **状态寄存器（Status Register）** 或 **标志寄存器（Flag Register）** - `SR` 或 `PSW`
    - 包含各种状态标志，如进位标志（C）、零标志（Z）、溢出标志（V）等。
-     - **RXNE（Receive Not Empty）**：接收缓冲器非空标志。**当RXNE标志位为1时**，表示UART的接收缓冲区中有新的数据可以被读取。这意味着数据已经接收完毕并存储在接收数据寄存器中，等待软件读取。读取数据后，RXNE标志位会被自动置为0。
-     - **TXE（Transmit Data Register Empty）**：发送数据寄存器空标志。**当TXE标志位为1时**，表示UART的发送缓冲区为空，可以向其中写入新的数据进行发送。当数据被写入缓冲区后，TXE标志位会被自动置为0。
+     - **RXNE（Receive *Not Empty*）**：接收缓冲器非空标志。**当RXNE标志位为1时**，表示UART的接收缓冲区中有新的数据可以被读取。这意味着数据已经接收完毕并存储在接收数据寄存器中，等待软件读取。读取数据后，RXNE标志位会被自动置为0。
+     - **TXE（Transmit Data Register *Empty*）**：发送数据寄存器空标志。**当TXE标志位为1时**，表示UART的发送缓冲区为空，可以向其中写入新的数据进行发送。当数据被写入缓冲区后，TXE标志位会被自动置为0。
 6. **指令寄存器（Instruction Register）** - `IR`
    - 存储当前正在执行的指令。
 7. **输入/输出寄存器（I/O Register）**
@@ -174,13 +261,15 @@ CK_CNT_OV = CK_CNT / （ARR + 1）
 
 **ARR**(自动重装载寄存器) ： 储存目标值，当CNT计数器到达目标值时，触发中 断，并将CNT计数器清零
 
-定时中断的区分
 
-![{3D18E70A-1345-405D-9515-DE843DD1A0E7}](C:\Users\tianxuan\AppData\Local\Packages\MicrosoftWindows.Client.CBS_cw5n1h2txyewy\TempState\ScreenClip\{3D18E70A-1345-405D-9515-DE843DD1A0E7}.png)
+
+- 定时中断的区分:
+
+![更新中断](D:\textbook\图片\更新中断.png)
 
 - 代表**更新中断**，触发中断函数
 
-![{A634CDE8-47CC-47DD-B0D3-B9CE9609B2F7}](C:\Users\tianxuan\AppData\Local\Packages\MicrosoftWindows.Client.CBS_cw5n1h2txyewy\TempState\ScreenClip\{A634CDE8-47CC-47DD-B0D3-B9CE9609B2F7}.png)
+![更新事件](D:\textbook\图片\更新事件.png)
 
 - 代表**更新事件**，触发另一外设
 
@@ -355,7 +444,7 @@ void TIM_CtrlPWMOutputs(TIM_TypeDef* TIMx, FunctionalState NewState);
 
 
 
-# ADC数模转化器
+# ADC模数转化器
 
 - ADC（Analog-Digital Converter）模拟-数字转换器
 - ADC可以将引脚上连续变化的模拟电压转换为内存中存储的数字变量，建立模拟电路到数字电路的桥梁
@@ -446,9 +535,15 @@ FlagStatus ADC_GetSoftwareStartConvStatus(ADC_TypeDef* ADCx);
 # SPI通信协议
 
 - SPI（Serial Peripheral Interface）是由Motorola公司开发的一种通用数据总线
-- 四根通信线：SCK（Serial Clock）、MOSI（Master Output Slave Input）、MISO（Master Input Slave Output）、SS（Slave Select）
+- 四根通信线：
+  - SCK（Serial Clock）时钟
+  - MOSI（Master Output Slave Input）主机输出数据脚
+  - MISO（Master Input Slave Output）主机输入数据脚
+  - SS/CS（Slave Select）片选,用于指定通信的对象
+
 - 同步，**全双工**
 - 支持总线挂载多设备（一主多从）
+- 电平特性 : 单端 -> 引脚的高低电平是相对GND的电压差 -> 需要接GND**(共地)**
 
 ## 硬件电路
 
@@ -461,17 +556,30 @@ FlagStatus ADC_GetSoftwareStartConvStatus(ADC_TypeDef* ADCx);
 ![image-20241116155744668](C:\Users\tianxuan\AppData\Roaming\Typora\typora-user-images\image-20241116155744668.png)
 
 <center>先移高位
-![image-20241117233826181](C:\Users\tianxuan\AppData\Roaming\Typora\typora-user-images\image-20241117233826181.png)
 
+
+
+![image-20241117233826181](C:\Users\tianxuan\AppData\Roaming\Typora\typora-user-images\image-20241117233826181.png)
 
 **SPI时序基本单元**
 
-- 起始条件：SS从高电平切换到低电平
-- 终止条件：SS从低电平切换到高电平
+- 起始条件：SS/CS 从高电平切换到低电平
+- 终止条件：SS/CS 从低电平切换到高电平
+
+​	**(低电平表示选中 , 高电平表示空闲)**
 
 选中过程中，SS需始终保持为低电平
 
 ![image-20241116162550701](C:\Users\tianxuan\AppData\Roaming\Typora\typora-user-images\image-20241116162550701.png)
+
+
+
+1. **CPOL（Clock Polarity）**：定义了时钟信号在空闲（idle）状态下的电平。
+   - CPOL=0：时钟空闲时输出低电平（0），有效时钟边沿为高电平（1），称为active-high。
+   - CPOL=1：时钟空闲时输出高电平（1），有效时钟边沿为低电平（0），称为active-low。
+2. **CPHA（Clock Phase）**：定义了数据采样的时钟边沿。
+   - CPHA=0：在时钟的第一个边沿（leading edge）处采样数据
+   - CPHA=1：在时钟的第二个边沿（trailing edge）处采样数据
 
 ## W25Qxx(存储模块)
 
@@ -483,9 +591,59 @@ FlagStatus ADC_GetSoftwareStartConvStatus(ADC_TypeDef* ADCx);
   - 写入操作前，必须**先进行写使能**
   - 每个数据位**只能由1改写为0**，不能由0改写为1
   - 写入数据前**必须先擦除**，擦除后，所有数据位变为1
-  - 擦除必须按最小擦除单元进行
-  - 连续写入多字节时，最多写入一页的数据，超过页尾位置的数据，会回到页首**覆盖写入**
+  - 擦除必须按最小擦除单元**(扇区)**进行
+  - 连续写入多字节时，**最多写入一页的数据**，超过页尾位置的数据，会回到页首**覆盖写入**
   - 写入操作结束后，芯片进入忙状态，**不响应**新的读写操作
 
 - 读取操作时：
-  - 直接调用读取时序，无需使能，无需额外操作，没有页的限制，读取操作结束后不会进入忙状态，但**不能在忙状态时读取**
+  - 直接调用读取时序，**无需使能**，无需额外操作，**没有页的限制**，读取操作结束后不会进入忙状态，但**不能在忙状态时读取**
+
+
+
+# 串口通信(USART)
+
+- TX(Transmit Exchange) 数据发送脚
+
+- RX(Receive Exchange) 数据接收脚
+
+- 点对点通信, 只能实现两个设备之间的通信,通信时无需寻址 
+
+
+
+## 电平标准
+
+电平标准是数据1和数据0的表达方式，是传输线缆中人为规定的电压与数据的对应关系，**串口常用的电平标准**有如下三种：
+
+- TTL电平：+3.3V 或 +5V 表示1，0V 表示0
+- RS232电平：-3 ~ -15V 表示1，+3~+15V 表示0
+- RS485电平：两线压差 +2 ~ +6V 表示1，-2 ~ -6V 表示0（差分信号)
+
+
+
+## 串口参数及时序
+
+- 波特率：串口通信的速率
+- 起始位：标志一个数据帧的开始，**固定为低电平**
+- 数据位：数据帧的有效载荷，1为高电平，0为低电平，**低位先行**
+- 校验位：用于数据验证，根据数据位计算得来
+- 停止位：用于数据帧间隔，**固定为高电平**
+
+​       (空闲状态时置高电平)
+
+![串口1](D:\textbook\图片\串口1.png)
+
+![串口2](D:\textbook\图片\串口2.png)
+
+
+
+- 自带波特率发生器，最高达4.5Mbits/s **(实际上为分频器)**
+
+- 支持同步模式、硬件流控制 、DMA、智能卡、IrDA、LIN
+
+​	(  硬件流控制 : **(多出一条接线 , 通过这条接线读取高低电平, 来判断是否发送数据,防止因为数据处理过慢导致数据丢失, 类似于标志位) ** )
+
+
+
+## USART基本结构
+
+![USART基本结构](D:\textbook\图片\USART基本结构.png)
